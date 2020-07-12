@@ -12,11 +12,11 @@ DragonMounts のエンダードラゴンに、littleMaidMob のメイドさん�
 
 ## 前提
 
-- Minecraft 1.6.4
-- MinecraftForge 1.6.4
-- YMTLib 164v1
-- MMM 氏が製作し、Tinyred 氏が 1.6.4 向けに修正した littleMaidMob-1_6_4-kai-1
-- BarracudaATA 氏製作の dragonmount_r36_mc1.6.x (Forge版)
+- Minecraft 1.7.10
+- MinecraftForge 1.7.10-10.13.2.1230
+- YMTLib 164v2
+- MMM 氏が製作し、EMB4 氏が 1.7.x 向けに修正した littleMaidMobX-1.7.x_0.0.8
+- BarracudaATA 氏製作の DragonMounts-r41-1.7.10
 
 
 ## 導入
@@ -69,6 +69,7 @@ limitations under the License.
 
 ## History
 
+- 17Av1: Minecraft1.7.10 対応。
 - 164v1: Minecraft1.6.4 対応。
 - 162v3: DragonMounts のバージョンアップ(dragonmount_r34_mc1.6.x以降)に対応、砂糖に反応しない時はワールド読み込みなおしてみてください。
 - 162v2: DragonMounts のバージョンアップ(dragonmount_r32_mc1.6.x以降)に対応。

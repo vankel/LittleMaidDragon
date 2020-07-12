@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Yamato
+ * Copyright 2015 Yamato
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,52 +15,33 @@
  */
 package mod.ymt.lmd;
 
-import mod.ymt.cmn.Utils;
-import net.minecraft.block.Block;
+import littleMaidMobX.LMM_EntityLittleMaid;
+import mmmlibx.lib.MMM_Helper;
+import mod.ymt.lmd.cmn.Utils;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.LMM_EntityLittleMaidAvatar;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.src.LMM_EntityLittleMaid;
-import net.minecraft.src.LMM_InventoryLittleMaid;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
+import wrapper.W_Common;
 
 public class EntityLmdMaidsan extends LMM_EntityLittleMaid {
-	private final LittleMaidDragonCore core = LittleMaidDragonCore.getInstance();
 	private NBTTagCompound dragonData = null;
 	boolean changedFromDragon = false;
-
-	// PlayerFormLittleMaid さんからアクセスしてくる用変数
-	private LMM_InventoryLittleMaid maidInventory = null;
-	// PlayerFormLittleMaid さんからアクセスしてくる用変数
-	private LMM_EntityLittleMaidAvatar maidAvatar = null;
-	// PlayerFormLittleMaid さんからアクセスしてくる用変数
-	private int maidDominantArm = 0;
-
+	
 	public EntityLmdMaidsan(World world) {
 		super(world);
-		core.logFine("EntityLmdMaidsan init on %s", world);
-		try {
-			this.maidInventory = (LMM_InventoryLittleMaid) LMM_EntityLittleMaid.class.getDeclaredField("maidInventory").get(this);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		try {
-			this.maidAvatar = (LMM_EntityLittleMaidAvatar) LMM_EntityLittleMaid.class.getDeclaredField("maidAvatar").get(this);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		//		System.out.println("# LittleMaidDragon: EntityLmdMaidsan # world = " + world);
 	}
-
+	
 	public NBTTagCompound getDragonData() {
 		return dragonData;
 	}
-
+	
 	@Override
 	public void handleHealthUpdate(byte par1) {
 		switch (par1) {
@@ -72,11 +53,11 @@ public class EntityLmdMaidsan extends LMM_EntityLittleMaid {
 				break;
 		}
 	}
-
+	
 	public void initNewMaidsan(EntityPlayer player, boolean hasSaddle) {
 		if (player != null) {
 			setTamed(true);
-			setOwner(player.getEntityName());
+			W_Common.setOwner(this, MMM_Helper.getPlayerName(player));
 			maidContractLimit = (24000 * 7); // 初期契約期間
 			maidAnniversary = player.worldObj.getTotalWorldTime() + 63072000000L; // 契約記念日
 			// LittleMaidMob に合わせて getWorldTime にしてあるけど、doDaylightCycle を考慮するなら getTotalWorldTime が正解
@@ -85,16 +66,16 @@ public class EntityLmdMaidsan extends LMM_EntityLittleMaid {
 			// MEMO: 100 * 365 * 24 * 60 * 60 * 20 = 63072000000L
 			if (hasSaddle && maidInventory.mainInventory[0] == null) {
 				// サドルを持たせる
-				maidInventory.mainInventory[0] = new ItemStack(Item.saddle);
+				maidInventory.mainInventory[0] = new ItemStack(Items.saddle);
 			}
 		}
 	}
-
+	
 	@Override
 	public boolean interact(EntityPlayer player) {
 		// ほんとはEntityModelBaseを継承するのが正攻法なんだろうけど、これだけの処理で作るのも微妙なので
 		if (isCommandWaiting(player)) {
-			if (isMaidHanded(Item.saddle) && Utils.tryUseItems(player, Item.sugar, true)) {
+			if (isMaidHanded(Items.saddle) && Utils.tryUseItems(player, Items.sugar, true)) {
 				eatSugar(false, true);
 				if (EntityLmdDragon.switchDragon(player, this)) {
 					if (Utils.isClientSide(worldObj))
@@ -108,13 +89,13 @@ public class EntityLmdMaidsan extends LMM_EntityLittleMaid {
 		}
 		return super.interact(player);
 	}
-
+	
 	@Override
 	public void onDeath(DamageSource par1DamageSource) {
 		super.onDeath(par1DamageSource);
-		dropItem(Block.dragonEgg.blockID, 1);
+		dropItem(Item.getItemFromBlock(Blocks.dragon_egg), 1);
 	}
-
+	
 	@Override
 	public void onLivingUpdate() {
 		if (changedFromDragon) {
@@ -126,7 +107,7 @@ public class EntityLmdMaidsan extends LMM_EntityLittleMaid {
 		}
 		super.onLivingUpdate();
 	}
-
+	
 	@Override
 	public void readEntityFromNBT(NBTTagCompound tag) {
 		super.readEntityFromNBT(tag);
@@ -134,18 +115,7 @@ public class EntityLmdMaidsan extends LMM_EntityLittleMaid {
 			dragonData = tag.getCompoundTag("dragon");
 		}
 	}
-
-	@Override
-	public void setDominantArm(int pindex) {
-		super.setDominantArm(pindex);
-		try {
-			this.maidDominantArm = (Integer) LMM_EntityLittleMaid.class.getDeclaredField("maidDominantArm").get(this);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
+	
 	public void setEntityDragon(EntityLiving dragon) {
 		if (dragon == null) {
 			dragonData = null;
@@ -155,7 +125,7 @@ public class EntityLmdMaidsan extends LMM_EntityLittleMaid {
 			dragon.writeEntityToNBT(dragonData);
 		}
 	}
-
+	
 	@Override
 	public void writeEntityToNBT(NBTTagCompound tag) {
 		super.writeEntityToNBT(tag);
@@ -163,7 +133,7 @@ public class EntityLmdMaidsan extends LMM_EntityLittleMaid {
 			tag.setTag("dragon", dragonData.copy());
 		}
 	}
-
+	
 	private boolean isCommandWaiting(EntityPlayer player) {
 		if (mstatgotcha != null || player.fishEntity != null) // 拉致中
 			return false;
@@ -175,10 +145,10 @@ public class EntityLmdMaidsan extends LMM_EntityLittleMaid {
 			return false;
 		return true;
 	}
-
+	
 	private boolean isMaidHanded(Item item) {
 		ItemStack handitem = maidInventory.getStackInSlot(0);
-		if (handitem != null && handitem.itemID == item.itemID) {
+		if (handitem != null && handitem.getItem() == item) {
 			return true;
 		}
 		return false;

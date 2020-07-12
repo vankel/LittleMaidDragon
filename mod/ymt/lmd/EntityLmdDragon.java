@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Yamato
+ * Copyright 2015 Yamato
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,30 +17,26 @@ package mod.ymt.lmd;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStage;
-import mod.ymt.cmn.Utils;
+import mod.ymt.lmd.cmn.Utils;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
+import net.minecraft.init.Items;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 public class EntityLmdDragon extends EntityTameableDragon {
-
-	// このクラスは reobfuscate_srg したものを実機に載せること
-	// EntityTameableDragon が reobfuscate_srg しているため
-
-	private final LittleMaidDragonCore core = LittleMaidDragonCore.getInstance();
-
 	private NBTTagCompound maidsanData = null;
 
 	public EntityLmdDragon(World world) {
 		super(world);
+		//		System.out.println("# LittleMaidDragon: EntityLmdDragon # world = " + world);
 	}
 
 	@Override
 	public boolean interact(EntityPlayer player) {
-		if (isTamed() && isOwner(player) && Utils.tryUseItems(player, Item.sugar, true)) {
+		// isOwner -> func_152114_e
+		if (isTamed() && func_152114_e(player) && Utils.tryUseItems(player, Items.sugar, true)) {
 			if (switchToMaidsan(player, this)) { // メイドさんに変身
 				setDead();
 			}
@@ -76,7 +72,6 @@ public class EntityLmdDragon extends EntityTameableDragon {
 	}
 
 	public static boolean switchDragon(EntityPlayer player, EntityLmdMaidsan maid) {
-		LittleMaidDragonCore core = LittleMaidDragonCore.getInstance();
 		NBTTagCompound tag = maid.getDragonData();
 		if (Utils.isClientSide(player.worldObj))
 			return true;
