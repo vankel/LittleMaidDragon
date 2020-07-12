@@ -15,12 +15,10 @@
  */
 package net.minecraft.src;
 
+import mod.ymt.cmn.CfgFile;
 import mod.ymt.lmd.LittleMaidDragonCore;
 
 public class mod_LittleMaidDragon extends BaseMod {
-	@MLProp
-	public static boolean debug = false;
-
 	@Override
 	public String getPriorities() {
 		return "required-after:mod_YMTLib;required-after:mod_LMM_littleMaidMob;required-after:DragonMounts";
@@ -28,19 +26,18 @@ public class mod_LittleMaidDragon extends BaseMod {
 
 	@Override
 	public String getVersion() {
-		return "152v2";
+		return "162v2";
 	}
 
 	@Override
 	public void load() {
-		try {
+		CfgFile cfg = new CfgFile("mod_LittleMaidDragon.txt");
+		if (cfg.getBoolean("enable", true)) {
 			LittleMaidDragonCore core = LittleMaidDragonCore.getInstance();
 			core.setBaseMod(this);
-			core.setResque(debug);
+			core.setResque(cfg.getBoolean("debug", false));
 			core.run();
 		}
-		catch (NoClassDefFoundError ex) {
-			ex.printStackTrace();
-		}
+		cfg.save();
 	}
 }

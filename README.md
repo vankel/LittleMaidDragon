@@ -12,11 +12,11 @@ DragonMounts のエンダードラゴンに、littleMaidMob のメイドさん�
 
 ## 前提
 
-- Minecraft 1.5.2
-- MinecraftForge 1.5.2
-- YMTLib 152v1
-- MMM 氏製作の littleMaidMob 1.5.2-4
-- BarracudaATA 氏製作の Dragon Mounts v0.99 (Forge版)
+- Minecraft 1.6.2
+- MinecraftForge 1.6.2
+- YMTLib 162v2
+- MMM 氏製作の littleMaidMob 1.6.2-1
+- BarracudaATA 氏製作の dragonmount_r33_mc1.6.x (Forge版)
 
 
 ## 導入
@@ -69,6 +69,8 @@ limitations under the License.
 
 ## History
 
+- 162v2: DragonMounts のバージョンアップ(dragonmount_r32_mc1.6.x以降)に対応。
+- 162v1: Minecraft1.6.2 対応。
 - 152v2: LittleMaidMob のバージョンアップ(1.5.2-4)に対応。
 - 152v1: Minecraft1.5.2 対応。
 - 151v2: MOD 読み込み順、およびDragonEggBlockの右クリックオーバーライドが上手く機能していなかったことに対処。

@@ -73,18 +73,16 @@ public class EntityLmdMaidsan extends LMM_EntityLittleMaid {
 		}
 	}
 
-	@Override
-	public void initCreature() {
-		super.initCreature();
-		setEntityHealth(getMaxHealth());
-	}
-
 	public void initNewMaidsan(EntityPlayer player, boolean hasSaddle) {
 		if (player != null) {
 			setTamed(true);
-			setOwner(player.username);
+			setOwner(player.getEntityName());
 			maidContractLimit = (24000 * 7); // ‰ŠúŒ_–ñŠúŠÔ
-			maidAnniversary = player.worldObj.getWorldTime(); // Œ_–ñ‹L”O“ú
+			maidAnniversary = player.worldObj.getTotalWorldTime() + 63072000000L; // Œ_–ñ‹L”O“ú
+			// LittleMaidMob ‚É‡‚í‚¹‚Ä getWorldTime ‚É‚µ‚Ä‚ ‚é‚¯‚ÇAdoDaylightCycle ‚ğl—¶‚·‚é‚È‚ç getTotalWorldTime ‚ª³‰ğ
+			// ‚½‚¾ LMD ‘¤‚¾‚¯ getTotalWorldTime ‚É‚µ‚Ä‚µ‚Ü‚¤‚ÆAgetWorldTime ‚ğg‚¤ LMM ‚Æ‹t‚Éd•¡‚µ‚Ä‚µ‚Ü‚¤‰Â”\«‚ª‹Í‚©‚É‚ ‚é‚Ì‚ÅA
+			// d•¡‚·‚é‰Â”\«‚Ì–³‚¢‚æ‚¤‚É 100 ”N‚ğ‰ÁZ‚·‚é
+			// MEMO: 100 * 365 * 24 * 60 * 60 * 20 = 63072000000L
 			if (hasSaddle && maidInventory.mainInventory[0] == null) {
 				// ƒTƒhƒ‹‚ğ‚½‚¹‚é
 				maidInventory.mainInventory[0] = new ItemStack(Item.saddle);
@@ -169,7 +167,7 @@ public class EntityLmdMaidsan extends LMM_EntityLittleMaid {
 	private boolean isCommandWaiting(EntityPlayer player) {
 		if (mstatgotcha != null || player.fishEntity != null) // f’v’†
 			return false;
-		if (health <= 0) // ‘Ì—Í‚È‚µ
+		if (func_110143_aJ() <= 0) // health ‘Ì—Í‚È‚µ
 			return false;
 		if (!isMaidContractOwner(player) || !isRemainsContract()) // player ‚ªŒ_–ñå‚Å‚Í‚È‚¢‚©AŒ_–ñŠúŠÔØ‚ê
 			return false;

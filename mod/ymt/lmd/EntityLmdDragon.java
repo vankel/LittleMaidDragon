@@ -15,11 +15,8 @@
  */
 package mod.ymt.lmd;
 
-import info.ata4.minecraft.dragon.server.entity.DragonLifeStage;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStage;
 import mod.ymt.cmn.Utils;
 import net.minecraft.src.EntityLiving;
 import net.minecraft.src.EntityPlayer;
@@ -43,11 +40,8 @@ public class EntityLmdDragon extends EntityTameableDragon {
 
 	@Override
 	public boolean interact(EntityPlayer player) {
-		if (isTamed() && isOwner(player) && Utils.tryUseItems(player, Item.sugar, false)) { // いったん消費なしでアイテム判定して、飛行中判定後に再度消費させる
-			if (isOnFlyingWithPlayer(player)) { // 飛行中なら何もしない
-				return false;
-			}
-			if (Utils.tryUseItems(player, Item.sugar, true) && switchToMaidsan(player, maidsanData)) { // メイドさんに変身
+		if (isTamed() && isOwner(player) && Utils.tryUseItems(player, Item.sugar, true)) {
+			if (switchToMaidsan(player, this)) { // メイドさんに変身
 				setDead();
 			}
 			return true;
@@ -73,82 +67,12 @@ public class EntityLmdDragon extends EntityTameableDragon {
 		}
 	}
 
-	public void setLifeStageForce(DragonLifeStage lifeStage) {
-		setLifeStage(lifeStage);
-		try {
-			Field f_lifeStage = EntityTameableDragon.class.getDeclaredField("lifeStage");
-			Field f_lifeStagePrev = EntityTameableDragon.class.getDeclaredField("lifeStagePrev");
-			Method m_onNewLifeStage = EntityTameableDragon.class.getDeclaredMethod("onNewLifeStage");
-			AccessibleObject.setAccessible(new AccessibleObject[]{
-				f_lifeStage, f_lifeStagePrev, m_onNewLifeStage
-			}, true);
-			f_lifeStage.set(this, lifeStage);
-			f_lifeStagePrev.set(this, lifeStage);
-			m_onNewLifeStage.invoke(this);
-		}
-		catch (Exception e) {
-			core.debugPrint(e, "set LifeStage failed");
-		}
-	}
-
-	@Override
-	public void setRidingPlayer(EntityPlayer player) {
-		if (isOnFlyingWithPlayer(player)) { // 飛行中なら何もしない
-			return;
-		}
-		super.setRidingPlayer(player);
-	}
-
-	public boolean switchToMaidsan(EntityPlayer player, NBTTagCompound tag) {
-		if (Utils.isClientSide(player.worldObj))
-			return false;
-		EntityLmdMaidsan maid = new EntityLmdMaidsan(player.worldObj);
-		if (tag != null && !tag.hasNoTags()) {
-			maid.readEntityFromNBT(tag);
-		}
-		else {
-			maid.initNewMaidsan(player, isSaddled());
-		}
-		maid.setEntityDragon(this); // メイドさんをロードした後に改めて設定
-		maid.setEntityHealth(MathHelper.ceiling_double_int(this.getHealth() * (double) maid.getMaxHealth() / this.getMaxHealth()));
-		maid.setPathToEntity(null);
-		maid.setAttackTarget(null);
-		maid.setLocationAndAngles(posX, posY, posZ, MathHelper.wrapAngleTo180_float(player.worldObj.rand.nextFloat() * 360.0F), 0);
-		maid.rotationYawHead = maid.rotationYaw;
-		maid.renderYawOffset = maid.rotationYaw;
-		maid.setMaidMode("Escorter");
-		maid.setMaidWait(true);
-		maid.setFreedom(false);
-		maid.changedFromDragon = true; // 竜へ変身した時の動作
-		return player.worldObj.spawnEntityInWorld(maid);
-	}
-
 	@Override
 	public void writeEntityToNBT(NBTTagCompound nbt) {
 		super.writeEntityToNBT(nbt);
 		if (maidsanData != null) {
 			nbt.setTag("maidsan", maidsanData.copy());
 		}
-	}
-
-	private boolean isOnFlyingWithPlayer(EntityPlayer player) {
-		if (onGround) // 地上なら false
-			return false;
-		if (riddenByEntity != player) // 乗っているのが player でないなら false
-			return false;
-		// 現在地から地面までの距離を調べる
-		{
-			final int DISTANCE = 5;
-			int x = MathHelper.floor_double(posX);
-			int y = MathHelper.floor_double(posY);
-			int z = MathHelper.floor_double(posZ);
-			for (int i = 0; i < DISTANCE && 0 < y - i; i++) {
-				if (worldObj.getBlockId(x, y - i, z) != 0) {
-					return false; // 一定距離内に空気ブロック以外のブロックがある
-				}
-			}
-		}
-		return true; // いずれでもない
 	}
 
 	public static boolean switchDragon(EntityPlayer player, EntityLmdMaidsan maid) {
@@ -166,14 +90,41 @@ public class EntityLmdDragon extends EntityTameableDragon {
 		if (!dragon.isSaddled()) {
 			dragon.setSaddled(true);
 		}
-		dragon.setLifeStageForce(DragonLifeStage.ADULT);
+		dragon.getLifeStageHelper().setLifeStage(DragonLifeStage.ADULT);
 		dragon.setEntityMaid(maid); // ドラゴンをロードした後に改めて設定
-		dragon.setEntityHealth(MathHelper.ceiling_double_int(maid.getHealth() * (double) dragon.getMaxHealth() / maid.getMaxHealth()));
+		// 変身するたびにライフが全快する仕様に変更
+		// dragon.setEntityHealth(MathHelper.ceiling_double_int(maid.getHealth() * (double) dragon.getMaxHealth() / maid.getMaxHealth()));
 		dragon.setPathToEntity(null);
 		dragon.setAttackTarget(null);
 		dragon.setLocationAndAngles(maid.posX, maid.posY, maid.posZ, MathHelper.wrapAngleTo180_float(player.worldObj.rand.nextFloat() * 360.0F), 0);
 		dragon.rotationYawHead = dragon.rotationYaw;
 		dragon.renderYawOffset = dragon.rotationYaw;
 		return player.worldObj.spawnEntityInWorld(dragon);
+	}
+
+	public static boolean switchToMaidsan(EntityPlayer player, EntityLmdDragon dragon) {
+		if (Utils.isClientSide(player.worldObj))
+			return false;
+		NBTTagCompound tag = dragon.maidsanData;
+		EntityLmdMaidsan maid = new EntityLmdMaidsan(player.worldObj);
+		if (tag != null && !tag.hasNoTags()) {
+			maid.readEntityFromNBT(tag);
+		}
+		else {
+			maid.initNewMaidsan(player, dragon.isSaddled());
+		}
+		maid.setEntityDragon(dragon); // メイドさんをロードした後に改めて設定
+		// 変身するたびにライフが全快する仕様に変更
+		// maid.setEntityHealth(MathHelper.ceiling_double_int(this.getHealth() * (double) maid.getMaxHealth() / this.getMaxHealth()));
+		maid.setPathToEntity(null);
+		maid.setAttackTarget(null);
+		maid.setLocationAndAngles(dragon.posX, dragon.posY, dragon.posZ, MathHelper.wrapAngleTo180_float(player.worldObj.rand.nextFloat() * 360.0F), 0);
+		maid.rotationYawHead = maid.rotationYaw;
+		maid.renderYawOffset = maid.rotationYaw;
+		maid.setMaidMode("Escorter");
+		maid.setMaidWait(true);
+		maid.setFreedom(false);
+		maid.changedFromDragon = true; // 竜へ変身した時の動作
+		return player.worldObj.spawnEntityInWorld(maid);
 	}
 }

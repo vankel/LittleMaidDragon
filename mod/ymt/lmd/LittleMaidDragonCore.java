@@ -31,15 +31,15 @@ public class LittleMaidDragonCore extends NekonoteCore {
 	private static final LittleMaidDragonCore instance = new LittleMaidDragonCore();
 	private boolean resque = false;
 	private BaseMod baseMod = null;
-
+	
 	private LittleMaidDragonCore() {
 		;
 	}
-
+	
 	public BaseMod getBaseMod() {
 		return baseMod;
 	}
-
+	
 	@Override
 	public void init() {
 		int dragonEggBlockId = Block.dragonEgg.blockID;
@@ -48,15 +48,14 @@ public class LittleMaidDragonCore extends NekonoteCore {
 		Block.blocksList[dragonEggBlockId] = null;
 		Item.itemsList[dragonEggBlockId] = null;
 		EntityEggInfo eggInfo = (EntityEggInfo) EntityList.entityEggs.remove(getDragonMountEntityId());
-
+		
 		// どらごん娘ブロック作成
-		Block newEggBlock = new DragonMaidEggBlock();
-		newEggBlock.setUnlocalizedName("dragonEgg"); // 名前は DragonMounts 側で付けてる
+		Block newEggBlock = new DragonMaidEggBlock(dragonEggBlockId);
 		ModLoader.registerBlock(newEggBlock);
 		replaceEggBlock(newEggBlock);
 		// 各種設定
 		Utils.addName(newEggBlock, "DragonEgg", "どらごんのたまご");
-
+		
 		int egg1 = eggInfo != null ? eggInfo.primaryColor : 0;
 		int egg2 = eggInfo != null ? eggInfo.secondaryColor : 0xcc00ff;
 		int dragonId = Utils.getUnusedEntityID();
@@ -65,7 +64,7 @@ public class LittleMaidDragonCore extends NekonoteCore {
 		int maidsId = Utils.getUnusedEntityID();
 		ModLoader.registerEntityID(EntityLmdMaidsan.class, "DragonMaidsan", maidsId);
 		ModLoader.addEntityTracker(baseMod, EntityLmdMaidsan.class, maidsId, 80, 3, true);
-
+		
 		// 救済
 		if (isResque()) {
 			debugPrint("resque mode");
@@ -77,19 +76,19 @@ public class LittleMaidDragonCore extends NekonoteCore {
 			}
 		}
 	}
-
+	
 	public boolean isResque() {
 		return resque;
 	}
-
+	
 	public void setBaseMod(BaseMod baseMod) {
 		this.baseMod = baseMod;
 	}
-
+	
 	public void setResque(boolean resque) {
 		this.resque = resque;
 	}
-
+	
 	private int getDragonMountEntityId() {
 		for (Object obj: new HashSet<Object>(EntityList.entityEggs.keySet())) {
 			if (obj instanceof Integer) {
@@ -101,7 +100,7 @@ public class LittleMaidDragonCore extends NekonoteCore {
 		}
 		return -1;
 	}
-
+	
 	private void replaceEggBlock(Block newBlock) {
 		try {
 			Reflection.replaceFieldValues(Block.class, null, Block.dragonEgg, newBlock);
@@ -110,7 +109,7 @@ public class LittleMaidDragonCore extends NekonoteCore {
 			debugPrint(ex, "replaceFieldValues dragonEgg");
 		}
 	}
-
+	
 	public static LittleMaidDragonCore getInstance() {
 		return instance;
 	}
