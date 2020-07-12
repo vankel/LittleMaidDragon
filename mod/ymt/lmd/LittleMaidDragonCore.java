@@ -17,7 +17,6 @@ package mod.ymt.lmd;
 
 import java.util.HashSet;
 import mod.ymt.cmn.NekonoteCore;
-import mod.ymt.cmn.Reflection;
 import mod.ymt.cmn.Utils;
 import net.minecraft.src.BaseMod;
 import net.minecraft.src.Block;
@@ -42,19 +41,8 @@ public class LittleMaidDragonCore extends NekonoteCore {
 	
 	@Override
 	public void init() {
-		int dragonEggBlockId = Block.dragonEgg.blockID;
-		Block oldEgg = Block.blocksList[dragonEggBlockId];
 		// 消去
-		Block.blocksList[dragonEggBlockId] = null;
-		Item.itemsList[dragonEggBlockId] = null;
 		EntityEggInfo eggInfo = (EntityEggInfo) EntityList.entityEggs.remove(getDragonMountEntityId());
-		
-		// どらごん娘ブロック作成
-		Block newEggBlock = new DragonMaidEggBlock(dragonEggBlockId);
-		ModLoader.registerBlock(newEggBlock);
-		replaceEggBlock(newEggBlock);
-		// 各種設定
-		Utils.addName(newEggBlock, "DragonEgg", "どらごんのたまご");
 		
 		int egg1 = eggInfo != null ? eggInfo.primaryColor : 0;
 		int egg2 = eggInfo != null ? eggInfo.secondaryColor : 0xcc00ff;
@@ -99,15 +87,6 @@ public class LittleMaidDragonCore extends NekonoteCore {
 			}
 		}
 		return -1;
-	}
-	
-	private void replaceEggBlock(Block newBlock) {
-		try {
-			Reflection.replaceFieldValues(Block.class, null, Block.dragonEgg, newBlock);
-		}
-		catch (Exception ex) {
-			debugPrint(ex, "replaceFieldValues dragonEgg");
-		}
 	}
 	
 	public static LittleMaidDragonCore getInstance() {

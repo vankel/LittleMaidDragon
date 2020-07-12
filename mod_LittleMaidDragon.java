@@ -26,7 +26,7 @@ public class mod_LittleMaidDragon extends BaseMod {
 
 	@Override
 	public String getVersion() {
-		return "162v2";
+		return "162v3";
 	}
 
 	@Override
