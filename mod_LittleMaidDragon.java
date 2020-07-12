@@ -18,15 +18,16 @@ package net.minecraft.src;
 import mod.ymt.cmn.CfgFile;
 import mod.ymt.lmd.LittleMaidDragonCore;
 
+@SuppressWarnings("deprecation")
 public class mod_LittleMaidDragon extends BaseMod {
 	@Override
 	public String getPriorities() {
-		return "required-after:mod_YMTLib;required-after:mod_LMM_littleMaidMob;required-after:DragonMounts";
+		return "required-after:mod.ymt.cmn.YMTLib;required-after:mod_LMM_littleMaidMob;required-after:DragonMounts";
 	}
 
 	@Override
 	public String getVersion() {
-		return "162v3";
+		return "164v1";
 	}
 
 	@Override

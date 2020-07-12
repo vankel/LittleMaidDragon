@@ -16,33 +16,33 @@
 package mod.ymt.lmd;
 
 import mod.ymt.cmn.Utils;
-import net.minecraft.src.Block;
-import net.minecraft.src.DamageSource;
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemStack;
+import net.minecraft.block.Block;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.LMM_EntityLittleMaidAvatar;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.src.LMM_EntityLittleMaid;
-import net.minecraft.src.LMM_EntityLittleMaidAvatar;
 import net.minecraft.src.LMM_InventoryLittleMaid;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.World;
+import net.minecraft.util.DamageSource;
+import net.minecraft.world.World;
 
 public class EntityLmdMaidsan extends LMM_EntityLittleMaid {
 	private final LittleMaidDragonCore core = LittleMaidDragonCore.getInstance();
 	private NBTTagCompound dragonData = null;
 	boolean changedFromDragon = false;
 
-	// PlayerFormLittleMaid ‚³‚ñ‚©‚çƒAƒNƒZƒX‚µ‚Ä‚­‚é—p•Ï”
+	// PlayerFormLittleMaid ã•ã‚“ã‹ã‚‰ã‚¢ã‚¯ã‚»ã‚¹ã—ã¦ãã‚‹ç”¨å¤‰æ•°
 	private LMM_InventoryLittleMaid maidInventory = null;
-	// PlayerFormLittleMaid ‚³‚ñ‚©‚çƒAƒNƒZƒX‚µ‚Ä‚­‚é—p•Ï”
+	// PlayerFormLittleMaid ã•ã‚“ã‹ã‚‰ã‚¢ã‚¯ã‚»ã‚¹ã—ã¦ãã‚‹ç”¨å¤‰æ•°
 	private LMM_EntityLittleMaidAvatar maidAvatar = null;
-	// PlayerFormLittleMaid ‚³‚ñ‚©‚çƒAƒNƒZƒX‚µ‚Ä‚­‚é—p•Ï”
+	// PlayerFormLittleMaid ã•ã‚“ã‹ã‚‰ã‚¢ã‚¯ã‚»ã‚¹ã—ã¦ãã‚‹ç”¨å¤‰æ•°
 	private int maidDominantArm = 0;
 
 	public EntityLmdMaidsan(World world) {
 		super(world);
-		core.debugPrint("EntityLmdMaidsan init on %s", world);
+		core.logFine("EntityLmdMaidsan init on %s", world);
 		try {
 			this.maidInventory = (LMM_InventoryLittleMaid) LMM_EntityLittleMaid.class.getDeclaredField("maidInventory").get(this);
 		}
@@ -77,14 +77,14 @@ public class EntityLmdMaidsan extends LMM_EntityLittleMaid {
 		if (player != null) {
 			setTamed(true);
 			setOwner(player.getEntityName());
-			maidContractLimit = (24000 * 7); // ‰ŠúŒ_–ñŠúŠÔ
-			maidAnniversary = player.worldObj.getTotalWorldTime() + 63072000000L; // Œ_–ñ‹L”O“ú
-			// LittleMaidMob ‚É‡‚í‚¹‚Ä getWorldTime ‚É‚µ‚Ä‚ ‚é‚¯‚ÇAdoDaylightCycle ‚ğl—¶‚·‚é‚È‚ç getTotalWorldTime ‚ª³‰ğ
-			// ‚½‚¾ LMD ‘¤‚¾‚¯ getTotalWorldTime ‚É‚µ‚Ä‚µ‚Ü‚¤‚ÆAgetWorldTime ‚ğg‚¤ LMM ‚Æ‹t‚Éd•¡‚µ‚Ä‚µ‚Ü‚¤‰Â”\«‚ª‹Í‚©‚É‚ ‚é‚Ì‚ÅA
-			// d•¡‚·‚é‰Â”\«‚Ì–³‚¢‚æ‚¤‚É 100 ”N‚ğ‰ÁZ‚·‚é
+			maidContractLimit = (24000 * 7); // åˆæœŸå¥‘ç´„æœŸé–“
+			maidAnniversary = player.worldObj.getTotalWorldTime() + 63072000000L; // å¥‘ç´„è¨˜å¿µæ—¥
+			// LittleMaidMob ã«åˆã‚ã›ã¦ getWorldTime ã«ã—ã¦ã‚ã‚‹ã‘ã©ã€doDaylightCycle ã‚’è€ƒæ…®ã™ã‚‹ãªã‚‰ getTotalWorldTime ãŒæ­£è§£
+			// ãŸã  LMD å´ã ã‘ getTotalWorldTime ã«ã—ã¦ã—ã¾ã†ã¨ã€getWorldTime ã‚’ä½¿ã† LMM ã¨é€†ã«é‡è¤‡ã—ã¦ã—ã¾ã†å¯èƒ½æ€§ãŒåƒ…ã‹ã«ã‚ã‚‹ã®ã§ã€
+			// é‡è¤‡ã™ã‚‹å¯èƒ½æ€§ã®ç„¡ã„ã‚ˆã†ã« 100 å¹´ã‚’åŠ ç®—ã™ã‚‹
 			// MEMO: 100 * 365 * 24 * 60 * 60 * 20 = 63072000000L
 			if (hasSaddle && maidInventory.mainInventory[0] == null) {
-				// ƒTƒhƒ‹‚ğ‚½‚¹‚é
+				// ã‚µãƒ‰ãƒ«ã‚’æŒãŸã›ã‚‹
 				maidInventory.mainInventory[0] = new ItemStack(Item.saddle);
 			}
 		}
@@ -92,7 +92,7 @@ public class EntityLmdMaidsan extends LMM_EntityLittleMaid {
 
 	@Override
 	public boolean interact(EntityPlayer player) {
-		// ‚Ù‚ñ‚Æ‚ÍEntityModelBase‚ğŒp³‚·‚é‚Ì‚ª³U–@‚È‚ñ‚¾‚ë‚¤‚¯‚ÇA‚±‚ê‚¾‚¯‚Ìˆ—‚Åì‚é‚Ì‚à”÷–­‚È‚Ì‚Å
+		// ã»ã‚“ã¨ã¯EntityModelBaseã‚’ç¶™æ‰¿ã™ã‚‹ã®ãŒæ­£æ”»æ³•ãªã‚“ã ã‚ã†ã‘ã©ã€ã“ã‚Œã ã‘ã®å‡¦ç†ã§ä½œã‚‹ã®ã‚‚å¾®å¦™ãªã®ã§
 		if (isCommandWaiting(player)) {
 			if (isMaidHanded(Item.saddle) && Utils.tryUseItems(player, Item.sugar, true)) {
 				eatSugar(false, true);
@@ -165,13 +165,13 @@ public class EntityLmdMaidsan extends LMM_EntityLittleMaid {
 	}
 
 	private boolean isCommandWaiting(EntityPlayer player) {
-		if (mstatgotcha != null || player.fishEntity != null) // f’v’†
+		if (mstatgotcha != null || player.fishEntity != null) // æ‹‰è‡´ä¸­
 			return false;
-		if (func_110143_aJ() <= 0) // health ‘Ì—Í‚È‚µ
+		if (getHealth() <= 0) // health ä½“åŠ›ãªã—
 			return false;
-		if (!isMaidContractOwner(player) || !isRemainsContract()) // player ‚ªŒ_–ñå‚Å‚Í‚È‚¢‚©AŒ_–ñŠúŠÔØ‚ê
+		if (!isMaidContractOwner(player) || !isRemainsContract()) // player ãŒå¥‘ç´„ä¸»ã§ã¯ãªã„ã‹ã€å¥‘ç´„æœŸé–“åˆ‡ã‚Œ
 			return false;
-		if (!isMaidWait()) // ‘Ò‹@ó‘Ô‚Å‚Í‚È‚¢
+		if (!isMaidWait()) // å¾…æ©ŸçŠ¶æ…‹ã§ã¯ãªã„
 			return false;
 		return true;
 	}

@@ -18,14 +18,16 @@ package mod.ymt.lmd;
 import java.util.HashSet;
 import mod.ymt.cmn.NekonoteCore;
 import mod.ymt.cmn.Utils;
+import net.minecraft.block.Block;
+import net.minecraft.entity.EntityEggInfo;
+import net.minecraft.entity.EntityList;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.src.BaseMod;
-import net.minecraft.src.Block;
-import net.minecraft.src.EntityEggInfo;
-import net.minecraft.src.EntityList;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
+import cpw.mods.fml.common.registry.GameRegistry;
 
+@SuppressWarnings("deprecation")
 public class LittleMaidDragonCore extends NekonoteCore {
 	private static final LittleMaidDragonCore instance = new LittleMaidDragonCore();
 	private boolean resque = false;
@@ -41,7 +43,7 @@ public class LittleMaidDragonCore extends NekonoteCore {
 	
 	@Override
 	public void init() {
-		// è¡ãé
+		// Ê∂àÂéª
 		EntityEggInfo eggInfo = (EntityEggInfo) EntityList.entityEggs.remove(getDragonMountEntityId());
 		
 		int egg1 = eggInfo != null ? eggInfo.primaryColor : 0;
@@ -53,12 +55,12 @@ public class LittleMaidDragonCore extends NekonoteCore {
 		ModLoader.registerEntityID(EntityLmdMaidsan.class, "DragonMaidsan", maidsId);
 		ModLoader.addEntityTracker(baseMod, EntityLmdMaidsan.class, maidsId, 80, 3, true);
 		
-		// ã~çœ
+		// ÊïëÊ∏à
 		if (isResque()) {
-			debugPrint("resque mode");
+			logFine("resque mode");
 			Object obj = EntityList.entityEggs.get(dragonId);
 			if (obj instanceof EntityEggInfo) {
-				ModLoader.addRecipe(new ItemStack(Item.monsterPlacer, 1, dragonId), new Object[]{
+				GameRegistry.addRecipe(new ItemStack(Item.monsterPlacer, 1, dragonId), new Object[]{
 					"XXX", "XYX", "XXX", 'X', Block.obsidian, 'Y', Item.egg
 				});
 			}

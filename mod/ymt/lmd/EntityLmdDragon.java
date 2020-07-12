@@ -18,17 +18,17 @@ package mod.ymt.lmd;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStage;
 import mod.ymt.cmn.Utils;
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.Item;
-import net.minecraft.src.MathHelper;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.World;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 
 public class EntityLmdDragon extends EntityTameableDragon {
 
-	// ‚±‚ÌƒNƒ‰ƒX‚Í reobfuscate_srg ‚µ‚½‚à‚Ì‚ğÀ‹@‚ÉÚ‚¹‚é‚±‚Æ
-	// EntityTameableDragon ‚ª reobfuscate_srg ‚µ‚Ä‚¢‚é‚½‚ß
+	// ã“ã®ã‚¯ãƒ©ã‚¹ã¯ reobfuscate_srg ã—ãŸã‚‚ã®ã‚’å®Ÿæ©Ÿã«è¼‰ã›ã‚‹ã“ã¨
+	// EntityTameableDragon ãŒ reobfuscate_srg ã—ã¦ã„ã‚‹ãŸã‚
 
 	private final LittleMaidDragonCore core = LittleMaidDragonCore.getInstance();
 
@@ -41,7 +41,7 @@ public class EntityLmdDragon extends EntityTameableDragon {
 	@Override
 	public boolean interact(EntityPlayer player) {
 		if (isTamed() && isOwner(player) && Utils.tryUseItems(player, Item.sugar, true)) {
-			if (switchToMaidsan(player, this)) { // ƒƒCƒh‚³‚ñ‚É•Ïg
+			if (switchToMaidsan(player, this)) { // ãƒ¡ã‚¤ãƒ‰ã•ã‚“ã«å¤‰èº«
 				setDead();
 			}
 			return true;
@@ -91,8 +91,8 @@ public class EntityLmdDragon extends EntityTameableDragon {
 			dragon.setSaddled(true);
 		}
 		dragon.getLifeStageHelper().setLifeStage(DragonLifeStage.ADULT);
-		dragon.setEntityMaid(maid); // ƒhƒ‰ƒSƒ“‚ğƒ[ƒh‚µ‚½Œã‚É‰ü‚ß‚Äİ’è
-		// •Ïg‚·‚é‚½‚Ñ‚Éƒ‰ƒCƒt‚ª‘S‰õ‚·‚éd—l‚É•ÏX
+		dragon.setEntityMaid(maid); // ãƒ‰ãƒ©ã‚´ãƒ³ã‚’ãƒ­ãƒ¼ãƒ‰ã—ãŸå¾Œã«æ”¹ã‚ã¦è¨­å®š
+		// å¤‰èº«ã™ã‚‹ãŸã³ã«ãƒ©ã‚¤ãƒ•ãŒå…¨å¿«ã™ã‚‹ä»•æ§˜ã«å¤‰æ›´
 		// dragon.setEntityHealth(MathHelper.ceiling_double_int(maid.getHealth() * (double) dragon.getMaxHealth() / maid.getMaxHealth()));
 		dragon.setPathToEntity(null);
 		dragon.setAttackTarget(null);
@@ -113,8 +113,8 @@ public class EntityLmdDragon extends EntityTameableDragon {
 		else {
 			maid.initNewMaidsan(player, dragon.isSaddled());
 		}
-		maid.setEntityDragon(dragon); // ƒƒCƒh‚³‚ñ‚ğƒ[ƒh‚µ‚½Œã‚É‰ü‚ß‚Äİ’è
-		// •Ïg‚·‚é‚½‚Ñ‚Éƒ‰ƒCƒt‚ª‘S‰õ‚·‚éd—l‚É•ÏX
+		maid.setEntityDragon(dragon); // ãƒ¡ã‚¤ãƒ‰ã•ã‚“ã‚’ãƒ­ãƒ¼ãƒ‰ã—ãŸå¾Œã«æ”¹ã‚ã¦è¨­å®š
+		// å¤‰èº«ã™ã‚‹ãŸã³ã«ãƒ©ã‚¤ãƒ•ãŒå…¨å¿«ã™ã‚‹ä»•æ§˜ã«å¤‰æ›´
 		// maid.setEntityHealth(MathHelper.ceiling_double_int(this.getHealth() * (double) maid.getMaxHealth() / this.getMaxHealth()));
 		maid.setPathToEntity(null);
 		maid.setAttackTarget(null);
@@ -124,7 +124,7 @@ public class EntityLmdDragon extends EntityTameableDragon {
 		maid.setMaidMode("Escorter");
 		maid.setMaidWait(true);
 		maid.setFreedom(false);
-		maid.changedFromDragon = true; // —³‚Ö•Ïg‚µ‚½‚Ì“®ì
+		maid.changedFromDragon = true; // ç«œã¸å¤‰èº«ã—ãŸæ™‚ã®å‹•ä½œ
 		return player.worldObj.spawnEntityInWorld(maid);
 	}
 }
